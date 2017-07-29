@@ -1177,23 +1177,10 @@ describe('cla:getGist', function () {
             done(res);
             return req;
         });
-        sinon.stub(repo_service, 'getGHRepo', function (args, done) {
-            assert(args.token);
-            done(null, testData.repo);
-        });
-        sinon.stub(repo_service, 'get', function (args, done) {
-            done(null, testRes.repoServiceGet);
-        });
-        sinon.stub(org_service, 'get', function (args, done) {
-            done(null, testRes.orgServiceGet);
-        });
     });
 
     afterEach(function () {
         https.request.restore();
-        repo_service.getGHRepo.restore();
-        repo_service.get.restore();
-        org_service.get.restore();
     });
 
     it('should extract valid gist ID', function (it_done) {
@@ -1217,6 +1204,42 @@ describe('cla:getGist', function () {
 
         cla.getGist(repo, function (err) {
             assert.equal(err, 'The gist url "undefined" seems to be invalid');
+            it_done();
+        });
+    });
+});
+
+describe('cla:getLinkedItem', function () {
+    beforeEach(function () {
+        testErr.repoServiceGetGHRepo = null;
+        config.server.github.token = 'token';
+        sinon.stub(repo_service, 'getGHRepo', function (args, done) {
+            assert(args.token);
+            done(testErr.repoServiceGetGHRepo, testData.repo);
+        });
+        sinon.stub(repo_service, 'get', function (args, done) {
+            done(null, testRes.repoServiceGet);
+        });
+        sinon.stub(org_service, 'get', function (args, done) {
+            done(null, testRes.orgServiceGet);
+        });
+    });
+
+    afterEach(function () {
+        repo_service.getGHRepo.restore();
+        repo_service.get.restore();
+        org_service.get.restore();
+    });
+
+    it('should return an error, if the GH Repo does not exist', function (it_done) {
+        var testArgs = {
+            repo: 'DoesNotExist',
+            owner: 'NoOne'
+        };
+        testErr.repoServiceGetGHRepo = 'GH Repo not found';
+
+        cla.getLinkedItem(testArgs, function (err) {
+            assert(err == 'GH Repo not found');
             it_done();
         });
     });
@@ -1249,51 +1272,16 @@ describe('cla:getGist', function () {
             it_done();
         });
     });
-});
 
-describe('cla:getLinkedItem', function () {
-    it('should find linked item using reponame and owner parameters', function (it_done) {
-        config.server.github.token = 'test_token';
-
-        sinon.stub(repo_service, 'get', function (args, done) {
-            done(null, testRes.repoServiceGet);
-        });
-        sinon.stub(org_service, 'get', function (args, done) {
-            done(null, testRes.orgServiceGet);
-        });
-        sinon.stub(repo_service, 'getGHRepo', function (args, done) {
-            assert(args.token);
-            done(null, testData.repo);
-        });
-
+    it('should only check linked org if repo name is not provided', function (it_done) {
         var args = {
-            repo: 'Hello-World',
             owner: 'octocat'
         };
 
         cla.getLinkedItem(args, function () {
-            assert(repo_service.getGHRepo.called);
-
-            it_done();
-            org_service.get.restore();
-            repo_service.get.restore();
-            repo_service.getGHRepo.restore();
-        });
-    });
-    it('should return an error, if the GH Repo does not exist', function (it_done) {
-        var testArgs = {
-            repo: 'DoesNotExist',
-            owner: 'NoOne'
-        };
-        sinon.stub(repo_service, 'getGHRepo', function (args, done) {
-            assert(testArgs.repo === args.repo);
-            assert(testArgs.owner === args.owner);
-            done('GH Repo not found', null);
-        });
-
-        cla.getLinkedItem(testArgs, function (err) {
-            assert(err == 'GH Repo not found');
-            repo_service.getGHRepo.restore();
+            assert(org_service.get.called);
+            assert(!repo_service.get.called);
+            assert(!repo_service.getGHRepo.called);
             it_done();
         });
     });

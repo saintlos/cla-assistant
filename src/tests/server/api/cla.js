@@ -86,7 +86,7 @@ describe('', function () {
             },
             repoService: {
                 get: JSON.parse(JSON.stringify(testData.repo_from_db)), //clone object
-                all: [JSON.parse(JSON.stringify(testData.repo_from_db))]
+                getByOwner: [JSON.parse(JSON.stringify(testData.repo_from_db))]
             },
             orgService: {
                 get: JSON.parse(JSON.stringify(testData.org_from_db)), //clone object
@@ -103,7 +103,7 @@ describe('', function () {
             },
             repoService: {
                 get: null,
-                all: null
+                getByOwner: null
             },
             orgService: {
                 get: null
@@ -407,8 +407,8 @@ describe('', function () {
                 cb(null, true);
             });
             sinon.stub(prService, 'editComment', function () {});
-            sinon.stub(repo_service, 'all', function (cb) {
-                cb(error.repoService.all, resp.repoService.all);
+            sinon.stub(repo_service, 'getByOwner', function (owner, cb) {
+                cb(error.repoService.getByOwner, resp.repoService.getByOwner);
             });
         });
 
@@ -417,7 +417,7 @@ describe('', function () {
             cla.sign.restore();
             prService.editComment.restore();
             statusService.update.restore();
-            repo_service.all.restore();
+            repo_service.getByOwner.restore();
         });
 
         it('should call cla service on sign', function (it_done) {
@@ -471,7 +471,7 @@ describe('', function () {
             resp.repoService.get = null;
             resp.cla.getLinkedItem = resp.orgService.get;
             global.config.server.github.timeToWait = 10;
-            resp.repoService.all = [];
+            resp.repoService.getByOwner = [];
 
             this.timeout(100);
             cla_api.sign(req, function (err, res) {
@@ -488,7 +488,7 @@ describe('', function () {
             this.timeout(600);
             resp.repoService.get = null;
             resp.cla.getLinkedItem = resp.orgService.get;
-            resp.repoService.all = [];
+            resp.repoService.getByOwner = [];
             console.log(resp.github.callRepos.length);
             for (var index = 0; index < 28; index++) {
                 resp.github.callRepos.push({
@@ -1048,8 +1048,8 @@ describe('', function () {
             };
             global.config.server.github.timeToWait = 0;
             resp.github.callRepos = testData.orgRepos;
-            sinon.stub(repo_service, 'all', function (cb) {
-                cb(error.repoService.all, resp.repoService.all);
+            sinon.stub(repo_service, 'getByOwner', function (owner, cb) {
+                cb(error.repoService.getByOwner, resp.repoService.getByOwner);
             });
             sinon.stub(cla_api, 'validatePullRequests', function (args, callback) {
                 if (typeof callback === 'function') {
@@ -1059,7 +1059,7 @@ describe('', function () {
         });
 
         afterEach(function () {
-            repo_service.all.restore();
+            repo_service.getByOwner.restore();
             cla_api.validatePullRequests.restore();
         });
 
@@ -1067,7 +1067,7 @@ describe('', function () {
             resp.orgService.get.isRepoExcluded = function () {
                 return true;
             };
-            resp.repoService.all = [];
+            resp.repoService.getByOwner = [];
             cla_api.validateOrgPullRequests(req, function () {
                 setTimeout(function () {
                     assert(!cla_api.validatePullRequests.called);
@@ -1089,7 +1089,7 @@ describe('', function () {
         });
 
         it('should validate repos that is not in the excluded list and don\'t have overridden cla', function (it_done) {
-            resp.repoService.all = [];
+            resp.repoService.getByOwner = [];
             resp.orgService.get.isRepoExcluded = function () {
                 return false;
             };
@@ -1102,7 +1102,7 @@ describe('', function () {
         });
 
         it('should NOT validate when querying repo collection throw error', function (it_done) {
-            error.repoService.all = 'any error of querying repo collection';
+            error.repoService.getByOwner = 'any error of querying repo collection';
             cla_api.validateOrgPullRequests(req, function (err) {
                 assert(!!err);
                 assert(!cla_api.validatePullRequests.called);

@@ -166,7 +166,7 @@ function removeOrgHook(org, token, done) {
 function handleHookForLinkedRepoInOrg(org, token, delegateFun, done) {
     repoService.getByOwner(org, function (error, repos) {
         if (error || !repos || repos.length === 0) {
-            return done(error, result);
+            return done(error);
         }
         async.series(repos.map(function (repo) {
             return function (callback) {

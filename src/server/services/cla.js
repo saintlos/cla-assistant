@@ -241,7 +241,7 @@ module.exports = function () {
                                 if (linkedOrg) {
                                     deferred.resolve(linkedOrg);
                                 } else {
-                                    deferred.reject(error);
+                                    deferred.reject(error || err);
                                 }
                             });
                         }

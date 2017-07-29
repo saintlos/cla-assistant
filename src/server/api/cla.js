@@ -120,7 +120,7 @@ function getReposNeedToValidate(req, done) {
             if (err) {
                 return done(err, repos);
             }
-            repoService.all(function (er, linkedRepos) {
+            repoService.getByOwner(req.args.org, function (er, linkedRepos) {
                 if (er) {
                     return done(er, repos);
                 }
@@ -418,7 +418,7 @@ module.exports = {
                     self.validatePullRequests(tmpReq, callback);
                 };
             }), function (err) {
-                done(error);
+                done(err);
             });
         });
     },

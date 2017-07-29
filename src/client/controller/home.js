@@ -459,7 +459,7 @@ module.controller('HomeCtrl', ['$rootScope', '$scope', '$document', '$HUB', '$RP
             });
 
             $scope.isComplete = function () {
-                return $scope.selected.item && (($scope.isRepo($scope.selected.item) && (!$scope.selected.gist.url || $scope.isValid($scope.selected.gist.url))) || (!$scope.isRepo($scope.selected.item) && $scope.isValid($scope.selected.gist.url)));
+                return $scope.selected.item && $scope.selected.gist && (($scope.isRepo($scope.selected.item) && (!$scope.selected.gist.url || $scope.isValid($scope.selected.gist.url))) || (!$scope.isRepo($scope.selected.item) && $scope.isValid($scope.selected.gist.url)));
             };
         }
     ])
