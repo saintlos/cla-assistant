@@ -23,12 +23,12 @@ spec:
         - name: GITHUB_CLIENT
           valueFrom:
             secretKeyRef:
-              name: github-oauth-msftclas-secret-dev
+              name: github-oauth-microsoft-cla-secret
               key: clientId
         - name: GITHUB_SECRET
           valueFrom:
             secretKeyRef:
-              name: github-oauth-msftclas-secret-dev
+              name: github-oauth-microsoft-cla-secret
               key: value
         - name: GITHUB_USER
           value: msftclas
@@ -45,10 +45,10 @@ spec:
         - name: MONGODB
           valueFrom:
             secretKeyRef:
-              name: msftclas-docdb-dev
+              name: msftclas-docdb-prod
               key: value
         - name: GITHUB_ADMIN_USERS
-          value: 'jeffmcaffer, willbar, jeffwilcox, geneh, notlaforge, arnom-ms, capfei, MichaelTsengLZ, MichaelTsengZL'
+          value: msftgits
         - name: CLOSE_COMMENT
           value: 'true'
         - name: ALWAYS_SHOW_UNSIGNED_LIST
