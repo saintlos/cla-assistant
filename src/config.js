@@ -77,6 +77,10 @@ module.exports = {
             token: process.env.SLACK_TOKEN
         },
 
+        appinsights: {
+            key: process.env.APPINSIGHTS_INSTRUMENTATION_KEY
+        },
+
         slack_url: process.env.SLACK_URL,
 
         sentry_dsn: process.env.SENTRY_DSN,

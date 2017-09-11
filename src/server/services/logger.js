@@ -44,4 +44,13 @@ try {
     });
 } catch (e) {}
 
+if (config.appinsights && config.appinsights.key) {
+    try {
+        var insights = require('applicationinsights');
+        insights.setup(config.appinsights.key)
+            .setAutoCollectConsole(true)
+            .start();
+    } catch (e) {}
+}
+
 module.exports = log;
