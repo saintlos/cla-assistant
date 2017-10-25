@@ -172,18 +172,32 @@ function validatePullRequest(args, done) {
 //      sharedGist (optional)
 // token (mandatory)
 function updateUsersPullRequests(args) {
-    function validateUserPRs(repo, owner, gist, sharedGist, numbers, token) {
-        numbers.forEach((prNumber) => {
-            validatePullRequest({
-                repo: repo,
-                owner: owner,
-                number: prNumber,
-                gist: gist,
-                sharedGist: sharedGist,
-                token: token
-            }, function () { /*do nothing*/ });
+    User.findOne({ name: args.user }, (err, user) => {
+        if (err || !user || !user.requests || user.requests.length < 1) {
+            let req = {
+                args: {
+                    gist: args.item.gist,
+                    token: args.token
+                }
+            };
+            if (args.item.sharedGist) {
+                return ClaApi.validateSharedGistItems(req, () => { /* eslint-disable-line no-empty-function */ });
+            } else if (args.item.org) {
+                req.args.org = args.item.org;
+                return ClaApi.validateOrgPullRequests(req, () => { /* eslint-disable-line no-empty-function */ });
+            } else {
+                req.args.repo = args.repo;
+                req.args.owner = args.owner;
+                return ClaApi.validatePullRequests(req, () => { /* eslint-disable-line no-empty-function */ });
+            }
+        }
+        let pullRequestNumber = 0;
+        user.requests.forEach(request => {
+            pullRequestNumber += request.numbers.length;
         });
-    }
+        log.trackEvent('CLAAssistantSignedPullRequest', { uuid: user.uuid, name: user.name, requests: JSON.stringify(user.requests) }, { CLAAssistantSignedPullRequest: pullRequestNumber });
+        prepareForValidation(args.item, user, done);
+    });
 
     function prepareForValidation(item, user) {
         const needRemove = [];
@@ -214,35 +228,18 @@ function updateUsersPullRequests(args) {
         });
     }
 
-    User.findOne({ name: args.user }, (err, user) => {
-        if (err || !user || !user.requests || user.requests.length < 1) {
-            let req = {
-                args: {
-                    gist: args.item.gist,
-                    token: args.token
-                }
-            };
-            if (args.item.sharedGist) {
-                return ClaApi.validateSharedGistItems(req, () => {
-                    // Ignore result
-                });
-            } else if (args.item.org) {
-                req.args.org = args.item.org;
-
-                return ClaApi.validateOrgPullRequests(req, () => {
-                    // Ignore result
-                });
-            }
-
-            req.args.repo = args.repo;
-            req.args.owner = args.owner;
-
-            return ClaApi.validatePullRequests(req, () => {
-                // Ignore result
-            });
-        }
-        prepareForValidation(args.item, user);
-    });
+    function validateUserPRs(repo, owner, gist, sharedGist, numbers, token) {
+        numbers.forEach((prNumber) => {
+            validatePullRequest({
+                repo: repo,
+                owner: owner,
+                number: prNumber,
+                gist: gist,
+                sharedGist: sharedGist,
+                token: token
+            }, function () { /*do nothing*/ });
+        });
+    }
 }
 
 function getReposNeedToValidate(req, done) {
@@ -587,7 +584,8 @@ let ClaApi = {
             args.custom_fields = req.args.custom_fields;
         }
         let self = this;
-
+        log.info({ name: 'CLAAssistantUserSign', args: JSON.stringify(args) });
+        let startTime = new Date();
         self.getLinkedItem({
             args: {
                 repo: args.repo,
@@ -609,7 +607,10 @@ let ClaApi = {
 
                     return done(err);
                 }
-                updateUsersPullRequests(args);
+                updateUsersPullRequests(args, () => {
+                    log.trackEvent('CLAAssistantUserSignDuration', { repo: args.repo, owner: args.owner, user: args.user, userId: args.userId }, { CLAAssistantUserSignDuration: (new Date() - startTime) / 1000 });
+                });
+                // The sign API will get a timeout error if waiting for validating pull requests.
                 done(null, signed);
             });
         });

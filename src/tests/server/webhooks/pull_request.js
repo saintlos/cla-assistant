@@ -332,33 +332,36 @@ return {
 
         sinon.stub(pullRequest, 'badgeComment').callsFake(function () { });
         sinon.stub(pullRequest, 'deleteComment').callsFake(function () { });
-        sinon.stub(status, 'update').callsFake(function (args) {
-            assert(args.owner);
-            assert(args.repo);
-            assert(args.number);
-            assert(args.signed !== undefined);
-            assert(args.token);
-        });
-        sinon.stub(status, 'updateForClaNotRequired').callsFake(function () { });
+		sinon.stub(status, 'update').callsFake(function (args, done) {
+			assert(args.owner);
+			assert(args.repo);
+			assert(args.number);
+			assert(args.signed !== undefined);
+			assert(args.token);
+			done();
+		});
+		sinon.stub(status, 'updateForClaNotRequired').callsFake(function (args, done) {
+			done();
+		});
 
-        sinon.stub(orgService, 'get').callsFake(function (args, done) {
-            assert(args.orgId);
-            done(null, {
-                org: 'orgOfRequestedRepo',
-                token: 'abc',
-                isRepoExcluded: function () {
-                    return false;
-                }
-            });
-        });
-        sinon.stub(logger, 'error').callsFake(function (msg) {
-            assert(msg);
-        });
-        sinon.stub(logger, 'warn').callsFake(function (msg) {
-            assert(msg);
-        });
-        sinon.stub(logger, 'info').callsFake(function (msg) {
-            assert(msg);
+		sinon.stub(orgService, 'get').callsFake(function (args, done) {
+			assert(args.orgId);
+			done(null, {
+				org: 'orgOfRequestedRepo',
+				token: 'abc',
+				isRepoExcluded: function () {
+					return false;
+				}
+			});
+		});
+		sinon.stub(logger, 'error').callsFake(function (msg) {
+			assert(msg);
+		});
+		sinon.stub(logger, 'warn').callsFake(function (msg) {
+			assert(msg);
+		});
+		sinon.stub(logger, 'info').callsFake(function (msg) {
+			assert(msg);
         });
         sinon.stub(User, 'findOne').callsFake((selector, cb) => {
             cb(null, testUser);
