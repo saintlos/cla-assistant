@@ -522,7 +522,7 @@ let ClaApi = {
             }
         }
 
-        function collectData(err, res, meta) {
+        function collectData(err, res) {
             if (err) {
                 log.error(new Error(err).stack);
             }
