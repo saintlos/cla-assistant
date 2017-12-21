@@ -75,6 +75,8 @@ spec:
           value: 'true'
         - name: GITHUB_DELAY
           value: '7000'
+        - name: PRE_POPULATE_USER_PULL_REQUEST
+          value: 'true'
       imagePullSecrets:
         - name: ospoaksdev.azurecr.io
 ---

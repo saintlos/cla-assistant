@@ -225,6 +225,9 @@ async function updateUsersPullRequests(args) {
 
         return prepareForValidation(args.item, user);
     } catch (e) {
+        if (config.server.feature_flag.pre_populate_user_pull_request === true) {
+            return;
+        }
         let req = {
             args: {
                 gist: args.item.gist,
