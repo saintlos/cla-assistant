@@ -62,7 +62,7 @@ async function updateStatusAndComment(args) {
         } else {
             await promisify(status.updateForClaNotRequired.bind(status))(args);
         }
-        if (!signed || config.server.feature_flag.close_comment !== 'true') {
+        if (!signed || !config.server.feature_flag.close_comment) {
             await promisify(pullRequest.badgeComment.bind(pullRequest))(
                 args.owner,
                 args.repo,
@@ -106,7 +106,7 @@ async function handleWebHook(args) {
 }
 
 module.exports = function (req, res) {
-    if (['opened', 'reopened', 'synchronize'].indexOf(req.args.action) > -1 && (req.args.repository && req.args.repository.private == false)) {
+    if (['opened', 'reopened', 'synchronize'].indexOf(req.args.action) > -1 && isRepoEnabled(req.args.repository)) {
         if (req.args.pull_request && req.args.pull_request.html_url) {
             logger.info('pull request ' + req.args.action + ' ' + req.args.pull_request.html_url);
         }
@@ -169,4 +169,8 @@ function collectMetrics(pullRequest, startTime, signed, action, isClaRequired) {
             logger.trackEvent(signed ? 'CLAAssistantAlreadySignedPullRequest' : 'CLAAssistantCLARequiredPullRequest', logProperty, signed ? { CLAAssistantAlreadySignedPullRequest: 1 } : { CLAAssistantCLARequiredPullRequest: 1 });
         }
     });
+}
+
+function isRepoEnabled(repository) {
+    return repository && (repository.private === false || config.server.feature_flag.enable_private_repos === 'true');
 }
