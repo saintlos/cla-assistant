@@ -132,7 +132,7 @@ module.exports = function (req, res) {
         setTimeout(function () {
             cla.getLinkedItem(args, function (err, item) {
                 if (err) {
-                    logger.warn(err);
+                    return log.error(err, { owner: args.owner, repo: args.repo, number: args.number });
                 }
                 if (!item) {
                     return;
