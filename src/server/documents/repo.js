@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let logger = require('../services/logger');
+// let logger = require('../services/logger');
 mongoose.Promise = require('q').Promise;
 
 let RepoSchema = mongoose.Schema({
@@ -13,14 +13,14 @@ let RepoSchema = mongoose.Schema({
     minCodeChanges: Number
 });
 
-let index = {
-    repoId: 1,
-    repo: 1,
-    owner: 1
-};
-let indexOptions = {
-    unique: true
-};
+// let index = {
+//     repoId: 1,
+//     repo: 1,
+//     owner: 1
+// };
+// let indexOptions = {
+//     unique: true
+// };
 
 let Repo = mongoose.model('Repo', RepoSchema);
 

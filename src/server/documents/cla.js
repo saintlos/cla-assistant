@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let logger = require('../services/logger');
+// let logger = require('../services/logger');
 mongoose.Promise = require('q').Promise;
 
 let CLASchema = mongoose.Schema({
@@ -17,20 +17,20 @@ let CLASchema = mongoose.Schema({
     userId: String,
 });
 
-let index = {
-    repo: 1,
-    repoId: 1,
-    owner: 1,
-    ownerId: 1,
-    user: 1,
-    gist_url: 1,
-    gist_version: 1,
-    org_cla: 1
-};
-let indexOptions = {
-    unique: true,
-    background: true
-};
+// let index = {
+//     repo: 1,
+//     repoId: 1,
+//     owner: 1,
+//     ownerId: 1,
+//     user: 1,
+//     gist_url: 1,
+//     gist_version: 1,
+//     org_cla: 1
+// };
+// let indexOptions = {
+//     unique: true,
+//     background: true
+// };
 
 let CLA = mongoose.model('CLA', CLASchema);
 
