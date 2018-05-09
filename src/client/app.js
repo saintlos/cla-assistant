@@ -8,8 +8,6 @@ var module = angular.module('app', ['cla.filters',
     'ngSanitize',
     'ngAnimate',
     'ngCsv',
-    'angulartics',
-    'angulartics.google.analytics'
 ]);
 // eslint-disable-next-line no-unused-vars
 var filters = angular.module('cla.filters', []);
