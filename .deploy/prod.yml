@@ -11,7 +11,7 @@ spec:
         env: prod
     spec:
       containers:
-      - image: ospok8sprod.azurecr.io/cla-dnf-prod:__BUILD_BUILDID__
+      - image: ospok8spub.azurecr.io/cla-dnf-prod:__BUILD_BUILDID__
         name: cla-dnf-prod
         ports:
         - containerPort: 5000
@@ -72,7 +72,7 @@ spec:
         - name: ALWAYS_SHOW_UNSIGNED_LIST
           value: 'true'
       imagePullSecrets:
-        - name: ospok8sprod.azurecr.io
+        - name: ospok8spub.azurecr.io
 ---
 apiVersion: v1
 kind: Service
