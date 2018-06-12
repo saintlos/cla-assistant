@@ -52,11 +52,6 @@ spec:
             secretKeyRef:
               name: cla-dnf-app-insights-prod
               key: value
-        - name: GITHUB_ADMIN_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: github-msftgits-super-token
-              key: value
         - name: GITHUB_ADMIN_USERS
           value: 'jongalloway, dnfadmin, MichaelTsengLZ'
         - name: CLOSE_COMMENT
