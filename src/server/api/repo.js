@@ -23,6 +23,10 @@ module.exports = {
     },
     create: function (req, done) {
         req.args.token = req.args.token || req.user.token;
+        if (config.server.github.adminToken) {
+            req.args.token = config.server.github.adminToken;
+            delete schema.token;
+        }
         Joi.validate(req.args, schema, { abortEarly: false, allowUnknown: true }, function (joiError) {
             if (joiError) {
                 joiError.code = 400;
