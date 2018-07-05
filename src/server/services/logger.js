@@ -25,7 +25,6 @@ log = bunyan.createLogger({
 if (config.server.appInsights) {
     appInsights.setup(config.server.appInsights)
         .setAutoCollectConsole(true)
-        .setAutoCollectDependencies(false)
         .start();
     log.trackEvent = function (name, properties, measurements) {
         return appInsights.defaultClient.trackEvent({ name, properties, measurements });
