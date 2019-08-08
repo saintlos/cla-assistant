@@ -67,7 +67,7 @@ spec:
               name: cla-web-hook-event-logic-app-dnf-prod
               key: value
         - name: GITHUB_ADMIN_USERS
-          value: 'jongalloway, dnfadmin, MichaelTsengLZ'
+          value: 'jongalloway, dnfadmin, MichaelTsengLZ, onovotny, haacked'
         - name: CLOSE_COMMENT
           value: 'true'
         - name: REQUIRED_SIGNEES
